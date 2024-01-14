@@ -6,9 +6,22 @@ import (
 	"net"
 	"net/http"
 	"strconv"
+    "regexp"
+    "html/template"
 )
 
+var bl = []string{"header.html", "footer.html", "blog.html"}
+
+var t *template.Template
+var routeMatch *regexp.Regexp
+
 func main() {
+    var err error
+    routeMatch, _ = regexp.Compile(`^\/(\w+)`)
+    t, err = template.ParseGlob("templates/*")
+    if (err != nil) {
+        log.Fatal(err)
+    }
     p := GetPort()
     log.Printf("Starting server at %s%s", GetOutboundIP(), p)
 
@@ -17,7 +30,8 @@ func main() {
         http.StripPrefix("/client/resources/", http.FileServer(http.Dir("client/resources/"))))
 
     //index handler
-    http.HandleFunc("/", indexHandler)
+    http.HandleFunc("/", servePage)
+    http.HandleFunc("/blog/", serveBlog)
 
     http.ListenAndServe(p, nil)
 }

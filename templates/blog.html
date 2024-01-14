@@ -1,0 +1,16 @@
+{{ template "header.html" . }}
+    {{if .IsLanding}}
+        {{ if not .Blogs }}
+        Nothing to show here
+        {{ else }}
+            <ul>
+            {{ range .Blogs }}
+                <li><a href={{.Src}}>{{.Title}}</a></li>
+            {{end}}
+            </ul>
+        {{end}}
+    {{else}}
+        <div>BLOG: </div>
+		<div>{{.BodyText}}</div>
+    {{end}}
+{{ template "footer.html" . }}
