@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"regexp"
-	"strings"
 )
 
 type NavItem struct {
@@ -38,25 +36,27 @@ func stringInSlice(a string, list []string) bool {
 	return false
 }
 
-var data = struct {
-	Title    string
-	BodyText string
-	NavItems []NavItem
-}{
-	Title:    "Test Page",
-	BodyText: "This Works",
-	NavItems: Nav,
-}
 
-// Endpoint handler for convert endpoint on server
+// Routing / serving handler for non-blog routes
 func servePage(w http.ResponseWriter, req *http.Request) {
+    var data = struct {
+        Title    string
+        BodyText string
+        NavItems []NavItem
+    }{
+        Title:    "My homepage",
+        BodyText: "This Works",
+        NavItems: Nav,
+    }
+
 	matches := routeMatch.FindStringSubmatch(req.URL.Path)
+
 	if len(matches) >= 1 {
 		page := matches[1] + ".html"
 
-		if stringInSlice(page, bl) {
+		if stringInSlice(page, ignorelist) {
 			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte("NOT FOUND"))
+            t.ExecuteTemplate(w, "404.html", nil)
 			return
 		} else if t.Lookup(page) != nil {
 			w.WriteHeader(http.StatusOK)
@@ -71,12 +71,25 @@ func servePage(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNotFound)
-	w.Write([]byte("NOT FOUND"))
+    t.ExecuteTemplate(w, "404.html", data)
 }
 
 func serveBlog(w http.ResponseWriter, req *http.Request) {
-	blogRouteMatch, _ := regexp.Compile(`^\/blog/(\w+)`)
 	blogMatches := blogRouteMatch.FindStringSubmatch(req.URL.Path)
+	data := struct {
+		Title     string
+		BodyText  string
+		NavItems  []NavItem
+		Blogs     []string
+		IsLanding bool
+	}{
+		Title:     "Test Page",
+		BodyText:  "This Works",
+		NavItems:  Nav,
+		Blogs:     nil,
+		IsLanding: false,
+	}
+
 	if len(blogMatches) >= 1 {
 		page := blogMatches[1] + ".html"
 		blogmatch, err := filepath.Glob("blog/" + page)
@@ -88,61 +101,24 @@ func serveBlog(w http.ResponseWriter, req *http.Request) {
 			if err != nil {
 				log.Println(err)
 			}
-            data := struct {
-                Title    string
-                BodyText string
-                NavItems []NavItem
-                IsLanding bool
-            }{
-                Title:    "Test Page",
-                BodyText: "This Works",
-                NavItems: Nav,
-                IsLanding: false,
-            }
-
 			data.BodyText = string(b)
-            
 
+            w.WriteHeader(http.StatusOK)
+            w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			t.ExecuteTemplate(w, "blog.html", data)
-		} else {
-			log.Println("too short")
-			log.Println(blogmatch)
-			log.Println(page)
-		}
-	} else if req.URL.Path == "/blog/" {
-		blogs, err := filepath.Glob("blog/*")
-        if err != nil {
-            log.Println(err)
-        }
-
-        blogdata := make([]string, len(blogs))
-
-        for index, item := range blogs {
-            filename := strings.TrimLeft(item, "blogs/")
-            name := strings.TrimRight(filename, ".html")
-            
-            blogdata[index] = name
-        }
-
-		data := struct {
-			Title    string
-			BodyText string
-			NavItems []NavItem
-            Blogs []string
-            IsLanding bool
-		}{
-			Title:    "Test Page",
-			BodyText: "This Works",
-			NavItems: Nav,
-            Blogs: blogdata,
-            IsLanding: true,
-		}
+            return
+		} 
+    } else if req.URL.Path == "/blog/" {
+		data.Blogs = bloglist
+		data.IsLanding = true
 
 		w.WriteHeader(http.StatusOK)
 		data.BodyText = "Blog landing page"
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		t.ExecuteTemplate(w, "blog.html", data)
 		return
-
 	}
+
+	w.WriteHeader(http.StatusNotFound)
+    t.ExecuteTemplate(w, "404.html", data)
 }
