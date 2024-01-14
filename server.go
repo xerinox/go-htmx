@@ -15,7 +15,7 @@ type NavItem struct {
 var Nav = []NavItem{
 	{
 		Text: "Home",
-		Src:  "/",
+		Src:  "/home",
 	},
 	{
 		Text: "About",
@@ -35,7 +35,6 @@ func stringInSlice(a string, list []string) bool {
 	}
 	return false
 }
-
 
 // Routing / serving handler for non-blog routes
 func servePage(w http.ResponseWriter, req *http.Request) {
@@ -83,7 +82,7 @@ func serveBlog(w http.ResponseWriter, req *http.Request) {
 		Blogs     []string
 		IsLanding bool
 	}{
-		Title:     "Test Page",
+		Title:     "Blog",
 		BodyText:  "This Works",
 		NavItems:  Nav,
 		Blogs:     nil,

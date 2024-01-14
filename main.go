@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-var ignorelist = []string{"header.html", "footer.html", "blog.html", "404.html"}
+var ignorelist = []string{"header.html", "footer.html", "blog.html", "404.html", "page.html", "index.html"}
 
 var t *template.Template
 var routeMatch *regexp.Regexp
@@ -26,9 +26,9 @@ func main() {
 
     setup()
 
+
 	// static file server for css/js
-	http.Handle("/resources/",
-		http.StripPrefix("/client/resources/", http.FileServer(http.Dir("client/resources/"))))
+    http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("client/resources/"))))
 
 	//index handler
 	http.HandleFunc("/", servePage)

@@ -1,16 +1,16 @@
-{{ template "header.html" . }}
-    {{if .IsLanding}}
-        {{ if not .Blogs }}
-        Nothing to show here
-        {{ else }}
-            <ul>
-            {{ range .Blogs }}
-                <li><a href={{.}}>{{.}}</a></li>
-            {{end}}
-            </ul>
+{{if .IsLanding}}
+    {{ if not .Blogs }}
+    Nothing to show here
+    {{ else }}
+        <ul>
+        {{ range .Blogs }}
+            <li><a href="#" hx-get="/blog/{{.}}" hx-target="#blogcontent" hx-replace="innerHTML">{{.}}</a></li>
         {{end}}
-    {{else}}
-        <div>BLOG: </div>
-		<div>{{.BodyText}}</div>
+        </ul>
+        <div id="blogcontent">
+        </div>
     {{end}}
-{{ template "footer.html" . }}
+{{else}}
+    <div>BLOG: </div>
+    <div>{{.BodyText}}</div>
+{{end}}
