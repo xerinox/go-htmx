@@ -74,10 +74,6 @@ func servePage(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("NOT FOUND"))
 }
 
-type page struct {
-    Title string;
-    Src string;
-}
 func serveBlog(w http.ResponseWriter, req *http.Request) {
 	blogRouteMatch, _ := regexp.Compile(`^\/blog/(\w+)`)
 	blogMatches := blogRouteMatch.FindStringSubmatch(req.URL.Path)
@@ -119,20 +115,20 @@ func serveBlog(w http.ResponseWriter, req *http.Request) {
             log.Println(err)
         }
 
-        blogdata := make([]page, len(blogs))
+        blogdata := make([]string, len(blogs))
 
         for index, item := range blogs {
             filename := strings.TrimLeft(item, "blogs/")
             name := strings.TrimRight(filename, ".html")
             
-            blogdata[index] = page{Title: name, Src: filename}
+            blogdata[index] = name
         }
 
 		data := struct {
 			Title    string
 			BodyText string
 			NavItems []NavItem
-            Blogs []page
+            Blogs []string
             IsLanding bool
 		}{
 			Title:    "Test Page",
