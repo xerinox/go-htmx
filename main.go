@@ -1,17 +1,24 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net"
 	"net/http"
-    "flag"
-    "strconv"
+	"strconv"
 )
 
 func main() {
     p := GetPort()
     log.Printf("Starting server at %s%s", GetOutboundIP(), p)
+
+    // static file server for css/js
+    http.Handle("/resources/",
+        http.StripPrefix("/client/resources/", http.FileServer(http.Dir("client/resources/"))))
+
+    //index handler
     http.HandleFunc("/", indexHandler)
+
     http.ListenAndServe(p, nil)
 }
 
