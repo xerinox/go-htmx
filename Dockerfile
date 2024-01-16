@@ -10,4 +10,6 @@ RUN cd /build/go-htmx/main && go get && go build
 
 EXPOSE 8080
 
+WORKDIR /build/go-htmx/main
+
 ENTRYPOINT [ "/build/go-htmx/main/main" ]
