@@ -1,0 +1,16 @@
+{{if .IsLanding}}
+    {{ if not .Blogs }}
+    Nothing to show here
+    {{ else }}
+        <ul>
+        {{ range .Blogs }}
+            <li><a href="#" hx-get="/blog/{{.}}" hx-target="#blogcontent" hx-replace="innerHTML">{{.}}</a></li>
+        {{end}}
+        </ul>
+        <div id="blogcontent">
+        </div>
+    {{end}}
+{{else}}
+    <div>BLOG: </div>
+    <div>{{.BodyText}}</div>
+{{end}}

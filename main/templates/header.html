@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<head>
+  <title>{{ .Title }}</title>
+  <link rel="stylesheet" href="/resources/style.css">
+  <script type="text/javascript" src="/resources/htmx.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+        {{ range .NavItems }}
+            <a href="#" hx-get="{{ .Src}}" hx-target="#content" hx-swap="innerHTML">{{ .Text }}</a>
+        {{ end }}
+        </nav>
+    </header>
