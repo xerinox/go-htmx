@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -41,6 +42,7 @@ func setup() {
 	var err error
 	routeMatch, _ = regexp.Compile(`^\/(\w+)`)
 	blogRouteMatch, _ = regexp.Compile(`^\/blog/(\w+)`)
+    log.Println(os.Getwd())
 	t, err = template.ParseGlob("templates/*")
 	if err != nil {
 		log.Fatal(err)
